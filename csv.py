@@ -70,13 +70,13 @@ class CsvImageFilter(object):
     :param tagsToExclude: a list of the tags to exclude.
     :type tagsToExclude: list of strings
     """
-    def __init__(self, name, schema, ssconvert_path,
+    def __init__(self, name, schema, ssconvert,
                  tagsToFind=[], tagsToExclude=[]):
         self.name = name
         self.schema = schema
         self.tagsToFind = tagsToFind
         self.tagsToExclude = tagsToExclude
-        self.ssconvert_path = ssconvert_path
+        self.ssconvert = ssconvert
 
     def __call__(self, sender, **kwargs):
         """post save callback entry point.
@@ -131,9 +131,9 @@ class CsvImageFilter(object):
             if not os.path.exists(os.path.dirname(preview_image_file_path)):
                 os.makedirs(os.path.dirname(preview_image_file_path))
 
-            ssconvert_bin = os.path.basename(self.ssconvert_path)
+            ssconvert_bin = os.path.basename(self.ssconvert)
             logger.info("ssconvert_bin = " + ssconvert_bin)
-            ssconvert_path = os.path.dirname(self.ssconvert_path)
+            ssconvert_path = os.path.dirname(self.ssconvert)
             logger.info("ssconvert_path = " + ssconvert_path)
 
             self.fileoutput(ssconvert_path,
