@@ -11,7 +11,8 @@ Filter for generating image thumbnails for MyTardis using Gnumeric's ssconvert t
 
 ## Installation
 
- - Install ssconvert, using ```sudo apt-get install gnumeric``
+ - Install Gnumeric (including ssconvert), using ```sudo apt-get install gnumeric``
+ - Install ImageMagick, using ```sudo apt-get install imagemagick```
 
 Git clone this repository into `/path/to/mytardis/tardis/tardis_portal/filters`:
     

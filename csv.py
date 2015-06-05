@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
 
 
 class CsvImageFilter(object):
-    """This filter uses Gnumeric's ssconvert to generate a 
+    """This filter uses Gnumeric's ssconvert to generate a
     preview image for a CSV (comma-separated values) file.
 
     The filter is currently targeting Ubuntu 12 (Precise),
@@ -70,14 +70,13 @@ class CsvImageFilter(object):
     :param tagsToExclude: a list of the tags to exclude.
     :type tagsToExclude: list of strings
     """
-    def __init__(self, name, schema, image_path, metadata_path,
+    def __init__(self, name, schema, ssconvert_path,
                  tagsToFind=[], tagsToExclude=[]):
         self.name = name
         self.schema = schema
         self.tagsToFind = tagsToFind
         self.tagsToExclude = tagsToExclude
-        self.image_path = image_path
-        self.metadata_path = metadata_path
+        self.ssconvert_path = ssconvert_path
 
     def __call__(self, sender, **kwargs):
         """post save callback entry point.
@@ -132,23 +131,22 @@ class CsvImageFilter(object):
             if not os.path.exists(os.path.dirname(preview_image_file_path)):
                 os.makedirs(os.path.dirname(preview_image_file_path))
 
-            bin_imagepath = os.path.basename(self.image_path)
-            logger.info("bin_imagepath = " + bin_imagepath)
-            cd_imagepath = os.path.dirname(self.image_path)
-            logger.info("cd_imagepath = " + cd_imagepath)
+            ssconvert_bin = os.path.basename(self.ssconvert_path)
+            logger.info("ssconvert_bin = " + ssconvert_bin)
+            ssconvert_path = os.path.dirname(self.ssconvert_path)
+            logger.info("ssconvert_path = " + ssconvert_path)
 
-            self.fileoutput(cd_imagepath,
-                            bin_imagepath,
+            self.fileoutput(ssconvert_path,
+                            ssconvert_bin,
                             filepath,
                             preview_image_file_path_pdf)
 
             self.fileoutput2('/usr/bin',
-                            'convert',
-                            '-flatten',
-                            preview_image_file_path_pdf + '[0]',
-                            '-background white',
-                            preview_image_file_path
-                           )
+                             'convert',
+                             '-flatten',
+                             preview_image_file_path_pdf + '[0]',
+                             '-background white',
+                             preview_image_file_path)
 
             metadata_dump = dict()
             metadata_dump['previewImage'] = preview_image_rel_file_path
@@ -175,7 +173,8 @@ class CsvImageFilter(object):
         try:
             ps = DatafileParameterSet.objects.get(schema=schema,
                                                   datafile=instance)
-            print "Parameter set already exists for %s, so we'll just return it." % instance.filename
+            print "Parameter set already exists for %s, " \
+                "so we'll just return it." % instance.filename
             return ps  # if already exists then just return it
         except DatafileParameterSet.DoesNotExist:
             ps = DatafileParameterSet(schema=schema,
@@ -197,7 +196,7 @@ class CsvImageFilter(object):
                         for val in reversed(metadata[p.name]):
                             strip_val = val.strip()
                             if strip_val:
-                                if not strip_val in exclude_line:
+                                if strip_val not in exclude_line:
                                     dfp = DatafileParameter(parameterset=ps,
                                                             name=p)
                                     dfp.string_value = strip_val
@@ -215,7 +214,7 @@ class CsvImageFilter(object):
         parameters = []
         for p in metadata:
 
-            if self.tagsToFind and not p in self.tagsToFind:
+            if self.tagsToFind and p not in self.tagsToFind:
                 continue
 
             if p in self.tagsToExclude:
@@ -292,22 +291,12 @@ class CsvImageFilter(object):
 
         return self.exec_command(cmd)
 
-    def fileoutput2(self,
-                   cd, execfilename, args1, inputfilename, args2, outputfilename):
+    def fileoutput2(self, cd, execfilename, args1, inputfilename, args2,
+                    outputfilename):
         """execute command on shell with a file output
         """
         cmd = "cd '%s'; ./'%s' %s '%s' %s '%s'" %\
             (cd, execfilename, args1, inputfilename, args2, outputfilename)
-        print cmd
-        logger.info(cmd)
-
-        return self.exec_command(cmd)
-
-    def textoutput(self, cd, execfilename, inputfilename, args=""):
-        """execute command on shell with a stdout output
-        """
-        cmd = "cd '%s'; ./'%s' '%s' %s" %\
-            (cd, execfilename, inputfilename, args)
         print cmd
         logger.info(cmd)
 
