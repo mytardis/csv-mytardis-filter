@@ -30,9 +30,9 @@
 #
 
 """
-bioformatsimage.py
+csv.py
 
-.. moduleauthor:: Steve Androulakis <steve.androulakis@gmail.com>
+.. moduleauthor:: James Wettenhall <james.wettenhall@monash.edu>
 
 """
 from fractions import Fraction
