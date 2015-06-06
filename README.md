@@ -34,7 +34,7 @@ Then add the definition for this filter.
 ```
 POST_SAVE_FILTERS = [
    ("tardis.tardis_portal.filters.csv.csv.make_filter",
-   ["CSV", "http://tardis.edu.au/schemas/csv/1",
+    ["CSV", "http://tardis.edu.au/schemas/csv/1",
     "/usr/bin/ssconvert"])
    ]
 ```
